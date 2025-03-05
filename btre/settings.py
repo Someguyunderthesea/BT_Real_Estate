@@ -33,6 +33,8 @@ ALLOWED_HOSTS = ['btrealestate-production-e74d.up.railway.app']
 
 
 CSRF_TRUSTED_ORIGINS = ['https://btrealestate-production-e74d.up.railway.app']
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 
 # Application definition
 
