@@ -32,6 +32,8 @@ DEBUG = True
 ALLOWED_HOSTS = ['btrealestate-production-e74d.up.railway.app']
 
 
+CSRF_TRUSTED_ORIGINS = ['https://btrealestate-production-e74d.up.railway.app']
+
 # Application definition
 
 INSTALLED_APPS = [
