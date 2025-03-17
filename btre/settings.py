@@ -12,27 +12,53 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
-from dotenv import load_dotenv
 
+from supabase import create_client
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+# Ensure SUPABASE_URL is not None
+if not SUPABASE_URL:
+    raise ValueError("SUPABASE_URL is not set in environment variables")
+# Create Supabase Client
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+# Correct MEDIA_URL format
+MEDIA_URL = f"{SUPABASE_URL}/storage/v1/object/public/media/"
+
+
+
+
+from dotenv import load_dotenv
+# Load environment variables from .env file
+load_dotenv()
+
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+DB_HOST = os.getenv('DB_HOST')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Ensure these variables are defined
-
+if not DB_PASSWORD:
+    raise ValueError("No DB_PASSWORD set for Django application")
+if not DB_HOST:
+    raise ValueError("No DB_HOST set for Django application")
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-r2&le&$_93gv-c*60rxdg)ktw6lq5i==%tilq0m9^$tzt+_5e*'
+SECRET_KEY = SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['btrealestate-production-e74d.up.railway.app']
-
-
-CSRF_TRUSTED_ORIGINS = ['https://btrealestate-production-e74d.up.railway.app']
+ALLOWED_HOSTS = ['btrealestate-production-8a0f.up.railway.app','localhost', '127.0.0.1']
+#CSRF FOR RAILWAY.APP
+CSRF_TRUSTED_ORIGINS = [
+    'https://btrealestate-production-8a0f.up.railway.app'
+]
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 
@@ -49,8 +75,8 @@ INSTALLED_APPS = [
     'listings',
     'realtors',
     'accounts',
-    'django.contrib.humanize',
     'contacts',
+    'django.contrib.humanize'
 ]
 
 MIDDLEWARE = [
@@ -62,6 +88,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
 ]
 
 ROOT_URLCONF = 'btre.urls'
@@ -94,17 +121,14 @@ WSGI_APPLICATION = 'btre.wsgi.application'
 #         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
-
-load_dotenv()
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'defaultdb',
+        'NAME': 'btre_backup',
         'USER': 'avnadmin',
-        'PASSWORD': os.getenv('db_password'),
-        'HOST': os.getenv('db_host'),
-        'PORT': '22783',
+        'PASSWORD': DB_PASSWORD,
+        'HOST': DB_HOST,
+        'PORT': '22740',
     }
 }
 
@@ -148,30 +172,27 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'btre/static')
 ]
-
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Media Folder Settings
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = 'media/'
+# MEDIA_URL = 'media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
+# Messages
 from django.contrib.messages import constants as messages
 
-
 MESSAGE_TAGS = {
-    messages.ERROR: 'danger',
-    
+    messages.ERROR: "danger",
 }
 
-
-load_dotenv()
+# Email Settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('email_host_user')
-EMAIL_HOST_PASSWORD = os.getenv('email_host_password')
+EMAIL_HOST_USER = EMAIL_HOST_USER  # Replace with your Gmail address
+EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD  # Use the App Password generated from Google
